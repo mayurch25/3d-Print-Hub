@@ -44,7 +44,6 @@
 
       <!-- Email Input -->
       <div class="mt-8">
-        .
         <input
           type="email"
           placeholder="Enter your email"
