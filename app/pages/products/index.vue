@@ -11,8 +11,7 @@ const products = [
       "Ambient table lamp with a custom 3D printed shade, perfect for bedrooms and living rooms.",
     description:
       "A soft‑glow LED lamp with a fully 3D printed shade. The patterned shell casts beautiful shadows on the wall and is ideal for bedside tables, desks, or cozy corners.",
-    image:
-      "https://images.pexels.com/photos/704772/pexels-photo-704772.jpeg?auto=compress&cs=tinysrgb&w=800",
+    image: "/assets/images/SM3dPrints.png",
   },
   {
     id: 2,
@@ -21,8 +20,7 @@ const products = [
       "Colorful and durable toy car made with child‑safe 3D printing materials.",
     description:
       "A fun, lightweight toy car printed in bright colors. Designed with smooth edges for kids and great for gifting or personal collections.",
-    image:
-      "https://images.pexels.com/photos/163768/pexels-photo-163768.jpeg?auto=compress&cs=tinysrgb&w=800",
+    image: "/assets/images/SM3dPrints.png",
   },
   {
     id: 3,
@@ -31,8 +29,7 @@ const products = [
       "Practical 3D printed organizer to keep your kitchen spoons and tools in one place.",
     description:
       "A sturdy, heat‑resistant tool holder that keeps your frequently used spoons, spatulas, and whisks upright and organized next to your stove.",
-    image:
-      "https://images.pexels.com/photos/2762876/pexels-photo-2762876.jpeg?auto=compress&cs=tinysrgb&w=800",
+    image: "/assets/images/SM3dPrints.png",
   },
   {
     id: 4,
@@ -41,8 +38,7 @@ const products = [
       "Compact 3D printed stand for smartphones, perfect for desks and bedside tables.",
     description:
       "A minimal, stable stand that holds your phone at a comfortable viewing angle for video calls, movies, or charging at night.",
-    image:
-      "https://images.pexels.com/photos/699122/pexels-photo-699122.jpeg?auto=compress&cs=tinysrgb&w=800",
+    image: "/assets/images/SM3dPrints.png",
   },
   {
     id: 5,
@@ -51,8 +47,7 @@ const products = [
       "Modern 3D printed planter ideal for small indoor plants and succulents.",
     description:
       "A stylish geometric pot that brings a modern touch to your desk or window. Perfect for succulents, cacti, or small indoor plants.",
-    image:
-      "https://images.pexels.com/photos/5699664/pexels-photo-5699664.jpeg?auto=compress&cs=tinysrgb&w=800",
+    image: "/assets/images/SM3dPrints.png",
   },
   {
     id: 6,
@@ -61,18 +56,9 @@ const products = [
       "Customized 3D printed name plate or quote for your wall or door.",
     description:
       "A fully customizable 3D printed name plate or quote sign that you can hang on walls, doors, or shelves to personalize your space.",
-    image:
-      "https://images.pexels.com/photos/1029612/pexels-photo-1029612.jpeg?auto=compress&cs=tinysrgb&w=800",
+    image: "/assets/images/SM3dPrints.png",
   },
 ];
-
-const onImageError = (event) => {
-  const img = event.target;
-  if (img && !img.dataset.fallbackUsed) {
-    img.src = "/assets/images/SM3dPrints.png";
-    img.dataset.fallbackUsed = "true";
-  }
-};
 </script>
 
 <template>
@@ -98,7 +84,6 @@ const onImageError = (event) => {
             :src="product.image"
             :alt="product.name"
             class="h-48 w-full object-cover"
-            @error="onImageError"
           />
 
           <div class="p-5 flex flex-col flex-1">
