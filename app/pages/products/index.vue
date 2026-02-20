@@ -11,7 +11,7 @@ const products = [
       "Ambient table lamp with a custom 3D printed shade, perfect for bedrooms and living rooms.",
     description:
       "A soft‑glow LED lamp with a fully 3D printed shade. The patterned shell casts beautiful shadows on the wall and is ideal for bedside tables, desks, or cozy corners.",
-    image: "/assets/images/SM3dPrints.png",
+    image: "/assets/images/nightlamp.png",
   },
   {
     id: 2,
@@ -20,7 +20,7 @@ const products = [
       "Colorful and durable toy car made with child‑safe 3D printing materials.",
     description:
       "A fun, lightweight toy car printed in bright colors. Designed with smooth edges for kids and great for gifting or personal collections.",
-    image: "/assets/images/SM3dPrints.png",
+    image: "/assets/images/3dprintedToycar.png",
   },
   {
     id: 3,
@@ -29,7 +29,7 @@ const products = [
       "Practical 3D printed organizer to keep your kitchen spoons and tools in one place.",
     description:
       "A sturdy, heat‑resistant tool holder that keeps your frequently used spoons, spatulas, and whisks upright and organized next to your stove.",
-    image: "/assets/images/SM3dPrints.png",
+    image: "/assets/images/kitchensppnholder.png",
   },
   {
     id: 4,
@@ -38,7 +38,7 @@ const products = [
       "Compact 3D printed stand for smartphones, perfect for desks and bedside tables.",
     description:
       "A minimal, stable stand that holds your phone at a comfortable viewing angle for video calls, movies, or charging at night.",
-    image: "/assets/images/SM3dPrints.png",
+    image: "/assets/images/phoneholder.png",
   },
   {
     id: 5,
@@ -47,7 +47,7 @@ const products = [
       "Modern 3D printed planter ideal for small indoor plants and succulents.",
     description:
       "A stylish geometric pot that brings a modern touch to your desk or window. Perfect for succulents, cacti, or small indoor plants.",
-    image: "/assets/images/SM3dPrints.png",
+    image: "/assets/images/3dprintgeomatricplanter.png",
   },
   {
     id: 6,
@@ -56,7 +56,7 @@ const products = [
       "Customized 3D printed name plate or quote for your wall or door.",
     description:
       "A fully customizable 3D printed name plate or quote sign that you can hang on walls, doors, or shelves to personalize your space.",
-    image: "/assets/images/SM3dPrints.png",
+    image: "/assets/images/wallart.png",
   },
 ];
 </script>
