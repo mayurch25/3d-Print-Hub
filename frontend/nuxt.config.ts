@@ -4,11 +4,14 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@nuxtjs/tailwindcss'],
   components: true,
+  typescript: {
+    tsConfig: {
+      compilerOptions: { types: ['node'] }
+    }
+  },
   runtimeConfig: {
     public: {
-      // apiBase: 'http://localhost:5000' // local
-      apiBase: 'https://threed-print-hub.onrender.com' 
-
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:5000'
     }
   }
 })
