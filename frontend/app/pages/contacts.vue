@@ -19,7 +19,7 @@
         questions.
       </p>
 
-      <div class="space-y-4 text-sm md:text-base">
+      <div class="text-center space-y-4 text-sm md:text-base">
         <div>
           <p class="font-semibold text-red-400">Mayur Chaudhari</p>
           <a

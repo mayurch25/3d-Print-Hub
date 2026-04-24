@@ -44,6 +44,10 @@ const doLogout = () => {
         </template>
         <template v-else>
           <NuxtLink
+            to="/auth/register"
+            class="bg-transparent hover:bg-gray-800 text-gray-300 hover:text-white px-5 py-2 rounded-xl border border-white/20 transition duration-300 text-sm"
+          >Register</NuxtLink>
+          <NuxtLink
             to="/auth/login"
             class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl shadow-lg shadow-red-600/30 transition duration-300 text-sm"
           >Login</NuxtLink>
