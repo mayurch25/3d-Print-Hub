@@ -5,8 +5,8 @@ import { authenticate } from "../../../middleware/auth.js";
 
 const router = Router();
 
-// Public — anyone can submit a product inquiry
-router.post("/", async (req, res, next) => {
+// Logged-in users only — prevents anonymous spam
+router.post("/", authenticate, async (req, res, next) => {
   try {
     await connectDB();
     const { name, email, message } = req.body;
