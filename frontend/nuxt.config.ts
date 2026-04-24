@@ -6,7 +6,9 @@ export default defineNuxtConfig({
   components: true,
   runtimeConfig: {
     public: {
-      apiBase: 'http://localhost:5000' // local
+      // apiBase: 'http://localhost:5000' // local
+      apiBase: 'https://threed-print-hub.onrender.com' 
+
     }
   }
 })
