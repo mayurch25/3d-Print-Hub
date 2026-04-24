@@ -15,12 +15,17 @@ const toast = ref('')
 const form = reactive({
   name: '',
   description: '',
-  imageUrl: '',
   price: '',
   category: '',
   inStock: true,
   published: false,
 })
+
+const existingImages = ref<string[]>([])
+const newFiles = ref<File[]>([])
+const newPreviews = ref<string[]>([])
+
+const totalImageCount = computed(() => existingImages.value.length + newFiles.value.length)
 
 onMounted(async () => {
   try {
@@ -29,16 +34,39 @@ onMounted(async () => {
     })
     form.name = product.name ?? ''
     form.description = product.description ?? ''
-    form.imageUrl = product.imageUrl ?? ''
     form.price = product.price != null ? String(product.price) : ''
     form.category = product.category ?? ''
     form.inStock = product.inStock ?? true
     form.published = product.published ?? false
+    existingImages.value = product.images ?? []
   } catch {
     error.value = 'Failed to load product.'
   }
   loading.value = false
 })
+
+const onFileSelect = (e: Event) => {
+  const input = e.target as HTMLInputElement
+  if (!input.files) return
+  const remaining = 4 - totalImageCount.value
+  const toAdd = Array.from(input.files).slice(0, remaining)
+  toAdd.forEach(file => {
+    newFiles.value.push(file)
+    const reader = new FileReader()
+    reader.onload = (ev) => newPreviews.value.push(ev.target?.result as string)
+    reader.readAsDataURL(file)
+  })
+  input.value = ''
+}
+
+const removeExisting = (index: number) => {
+  existingImages.value.splice(index, 1)
+}
+
+const removeNew = (index: number) => {
+  newFiles.value.splice(index, 1)
+  newPreviews.value.splice(index, 1)
+}
 
 const submit = async () => {
   error.value = ''
@@ -48,15 +76,30 @@ const submit = async () => {
   }
   saving.value = true
   try {
+    let uploadedUrls: string[] = []
+    if (newFiles.value.length > 0) {
+      const fd = new FormData()
+      newFiles.value.forEach(f => fd.append('images', f))
+      const res = await $fetch<{ urls: string[] }>(`${API}/api/upload`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token.value}` },
+        body: fd,
+      })
+      uploadedUrls = res.urls
+    }
+    const images = [...existingImages.value, ...uploadedUrls]
     await $fetch(`${API}/api/products/${id}`, {
       method: 'PUT',
       headers: { Authorization: `Bearer ${token.value}` },
-      body: { ...form, price: form.price ? Number(form.price) : undefined }
+      body: { ...form, images, price: form.price ? Number(form.price) : undefined }
     })
+    existingImages.value = images
+    newFiles.value = []
+    newPreviews.value = []
     toast.value = 'Product updated!'
     setTimeout(() => { toast.value = '' }, 3000)
   } catch (err: any) {
-    error.value = err?.data?.message || 'Failed to update product.'
+    error.value = err?.data?.message || err?.message || 'Failed to update product.'
   } finally {
     saving.value = false
   }
@@ -96,17 +139,57 @@ const submit = async () => {
           />
         </div>
 
+        <!-- Product Images -->
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-1.5">Image URL</label>
-          <input
-            v-model="form.imageUrl"
-            type="url"
-            placeholder="https://..."
-            class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:border-red-500 transition"
-          />
-          <div v-if="form.imageUrl" class="mt-3 rounded-xl overflow-hidden border border-white/10">
-            <img :src="form.imageUrl" alt="preview" class="w-full h-40 object-cover" />
+          <label class="block text-sm font-medium text-gray-300 mb-1.5">
+            Product Images
+            <span class="text-gray-500 font-normal ml-1">(up to 4)</span>
+          </label>
+
+          <div v-if="existingImages.length > 0 || newPreviews.length > 0" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
+            <!-- Existing images -->
+            <div
+              v-for="(src, i) in existingImages"
+              :key="`ex-${i}`"
+              class="relative group rounded-xl overflow-hidden border border-white/10 aspect-square"
+            >
+              <img :src="src" class="w-full h-full object-cover" />
+              <button
+                type="button"
+                @click="removeExisting(i)"
+                class="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-black/70 text-red-400 flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-xs font-bold"
+              >✕</button>
+              <div v-if="i === 0 && newPreviews.length === 0" class="absolute bottom-0 inset-x-0 text-center text-xs text-gray-400 bg-black/50 py-0.5">Cover</div>
+            </div>
+
+            <!-- New file previews -->
+            <div
+              v-for="(src, i) in newPreviews"
+              :key="`new-${i}`"
+              class="relative group rounded-xl overflow-hidden border border-red-500/30 aspect-square"
+            >
+              <img :src="src" class="w-full h-full object-cover" />
+              <button
+                type="button"
+                @click="removeNew(i)"
+                class="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-black/70 text-red-400 flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-xs font-bold"
+              >✕</button>
+              <div class="absolute bottom-0 inset-x-0 text-center text-xs text-yellow-400 bg-black/50 py-0.5">New</div>
+            </div>
           </div>
+
+          <!-- Upload button (visible when below 4 total) -->
+          <label
+            v-if="totalImageCount < 4"
+            class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-gray-700 rounded-xl cursor-pointer hover:border-red-500/50 hover:bg-red-500/5 transition"
+          >
+            <svg class="h-8 w-8 text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <p class="text-gray-500 text-sm">Click to upload images</p>
+            <p class="text-gray-600 text-xs mt-1">PNG, JPG up to 5MB each — {{ 4 - totalImageCount }} slot(s) remaining</p>
+            <input type="file" accept="image/*" multiple class="hidden" @change="onFileSelect" />
+          </label>
         </div>
 
         <div class="grid grid-cols-2 gap-4">

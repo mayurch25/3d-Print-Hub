@@ -9,6 +9,13 @@ const { isLoggedIn, user, token, init } = useAuth()
 
 const { data: product, pending, error } = await useFetch<any>(`${API}/api/products/${id}`)
 
+const activeImage = ref(0)
+
+const productImages = computed(() => {
+  const imgs = product.value?.images ?? []
+  return imgs.length > 0 ? imgs : ['/assets/images/SM3dPrints.png']
+})
+
 const onImageError = (e: any) => {
   if (!e.target.dataset.fb) {
     e.target.src = '/assets/images/SM3dPrints.png'
@@ -83,12 +90,27 @@ const submitInquiry = async () => {
       <template v-else>
         <!-- Product card -->
         <div class="bg-[#0b1120] border border-white/10 rounded-2xl overflow-hidden shadow-2xl shadow-black/40 md:flex">
-          <img
-            :src="product.imageUrl || '/assets/images/SM3dPrints.png'"
-            :alt="product.name"
-            class="w-full md:w-1/2 h-72 md:h-auto object-cover"
-            @error="onImageError"
-          />
+          <!-- Image gallery -->
+          <div class="w-full md:w-1/2 flex flex-col">
+            <img
+              :src="productImages[activeImage]"
+              :alt="product.name"
+              class="w-full h-72 md:h-80 object-cover"
+              @error="onImageError"
+            />
+            <div v-if="productImages.length > 1" class="flex gap-2 p-3 bg-[#0b1120] overflow-x-auto">
+              <button
+                v-for="(src, i) in productImages"
+                :key="i"
+                type="button"
+                @click="activeImage = Number(i)"
+                class="flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 transition"
+                :class="activeImage === i ? 'border-red-500' : 'border-white/10 opacity-60 hover:opacity-100'"
+              >
+                <img :src="src" class="w-full h-full object-cover" @error="onImageError" />
+              </button>
+            </div>
+          </div>
 
           <div class="p-6 md:p-8 flex-1">
             <div class="flex items-start justify-between gap-3 mb-2">
