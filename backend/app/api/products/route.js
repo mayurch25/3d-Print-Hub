@@ -1,14 +1,15 @@
 import { Router } from "express";
 import { connectDB } from "../../../lib/mongodb.js";
 import Products from "../../../models/Products.js";
-import { authenticate } from "../../../middleware/auth.js";
+import { authenticate, optionalAuth } from "../../../middleware/auth.js";
 
 const router = Router();
 
-router.get("/", async (req, res, next) => {
+router.get("/", optionalAuth, async (req, res, next) => {
   try {
     await connectDB();
-    const products = await Products.find().sort({ createdAt: -1 });
+    const filter = req.user ? {} : { published: true };
+    const products = await Products.find(filter).sort({ createdAt: -1 });
     res.json(products);
   } catch (err) {
     next(err);

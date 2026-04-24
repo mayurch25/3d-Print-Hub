@@ -7,6 +7,7 @@ const ProductSchema = new mongoose.Schema({
   price: { type: Number, min: 0 },
   category: String,
   inStock: { type: Boolean, default: true },
+  published: { type: Boolean, default: false },
 }, { timestamps: true });
 
 export default mongoose.models.Products || mongoose.model("Products", ProductSchema);
