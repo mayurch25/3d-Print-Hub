@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // apiBase: 'http://localhost:5000' // local
-      apiBase: 'http://threed-print-hub.onrender.com' 
+      apiBase: 'https://threed-print-hub.onrender.com' 
 
     }
   }
