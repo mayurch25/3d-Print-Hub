@@ -1,117 +1,172 @@
-<script setup>
-definePageMeta({
-  layout: "products",
-});
+<script setup lang="ts">
+definePageMeta({ layout: 'products' })
 
-const products = [
-  {
-    id: 1,
-    name: "3D Printed Night Lamp",
-    description:
-      "Ambient table lamp with a custom 3D printed shade, perfect for bedrooms and living rooms.\n\nThe patterned shell casts soft, artistic shadows and can be customized with different patterns and colors.",
-    image: "/assets/images/nightlamp.png",
-  },
-  {
-    id: 2,
-    name: "Kids 3D Printed Toy Car",
-    description:
-      "Colorful and durable 3D printed toy car designed especially for children.\n\nPrinted with smooth edges and strong material, perfect for everyday play.",
-    image: "/assets/images/3dprintedToycar.png",
-  },
-  {
-    id: 3,
-    name: "Kitchen Spoon & Tool Holder",
-    description:
-      "A practical 3D printed organizer that keeps your spoons and kitchen tools upright and within easy reach.\n\nHelps keep your countertop clean and your most‑used tools ready to grab.",
-    image: "/assets/images/kitchensppnholder.png",
-  },
-  {
-    id: 4,
-    name: "Phone Stand / Dock",
-    description:
-      "Compact, stable stand for your smartphone, ideal for desks, workspaces, or bedside tables.\n\nGreat for video calls, watching content, or keeping your phone visible while charging.",
-    image: "/assets/images/phoneholder.png",
-  },
-  {
-    id: 5,
-    name: "Geometric Planter Pot",
-    description:
-      "Modern geometric planter for small indoor plants and succulents.\n\nAdds a clean, designer look to work desks, shelves, and window sills.",
-    image: "/assets/images/3dprintgeomatricplanter.png",
-  },
-  {
-    id: 6,
-    name: "Wall Art Name Plate",
-    description:
-      "Custom 3D printed name plate or quote sign, perfect for doors, kids rooms, or office spaces.\n\nYou can choose your own text, font style, and basic color theme.",
-    image: "/assets/images/wallart.png",
-  },
-];
+const config = useRuntimeConfig()
+const API = config.public.apiBase
+const route = useRoute()
+const id = route.params.id as string
 
-const route = useRoute();
-const id = computed(() => Number(route.params.id));
-const product = computed(() => products.find((item) => item.id === id.value));
+const { data: product, pending, error } = await useFetch<any>(`${API}/api/products/${id}`)
 
-const onImageError = (event) => {
-  const img = event.target;
-  if (img && !img.dataset.fallbackUsed) {
-    img.src = "/assets/images/SM3dPrints.png";
-    img.dataset.fallbackUsed = "true";
+const onImageError = (e: any) => {
+  if (!e.target.dataset.fb) {
+    e.target.src = '/assets/images/SM3dPrints.png'
+    e.target.dataset.fb = '1'
   }
-};
+}
+
+// Inquiry form
+const form = reactive({ name: '', email: '', phone: '', message: '' })
+const formError = ref('')
+const formSuccess = ref(false)
+const submitting = ref(false)
+
+const submitInquiry = async () => {
+  formError.value = ''
+  if (!form.name || !form.email || !form.message) {
+    formError.value = 'Name, email, and message are required.'
+    return
+  }
+  submitting.value = true
+  try {
+    await $fetch(`${API}/api/messages`, {
+      method: 'POST',
+      body: {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        productId: product.value?._id,
+        productName: product.value?.name,
+        message: form.message
+      }
+    })
+    formSuccess.value = true
+    form.name = ''
+    form.email = ''
+    form.phone = ''
+    form.message = ''
+  } catch (err: any) {
+    formError.value = err?.data?.message || 'Failed to send enquiry. Please try again.'
+  } finally {
+    submitting.value = false
+  }
+}
 </script>
 
 <template>
   <section class="bg-[#020617] min-h-screen py-16">
     <div class="max-w-5xl mx-auto px-6">
-      <NuxtLink
-        to="/products"
-        class="inline-flex items-center text-sm text-gray-400 hover:text-red-400 mb-6"
-      >
+      <NuxtLink to="/products" class="inline-flex items-center text-sm text-gray-400 hover:text-red-400 mb-6">
         ← Back to products
       </NuxtLink>
 
-      <div
-        v-if="product"
-        class="bg-[#0b1120] border border-white/10 rounded-2xl overflow-hidden shadow-2xl shadow-black/40 md:flex"
-      >
-        <img
-          :src="product.image"
-          :alt="product.name"
-          class="w-full md:w-1/2 h-72 md:h-auto object-cover"
-          @error="onImageError"
-        />
-
-        <div class="p-6 md:p-8 flex-1">
-          <p class="text-xs uppercase tracking-wide text-gray-500 mb-2">
-            Product ID: {{ product.id }}
-          </p>
-          <h1 class="text-2xl md:text-3xl font-semibold text-gray-100 mb-4">
-            {{ product.name }}
-          </h1>
-          <p class="whitespace-pre-line text-gray-300 leading-relaxed mb-6">
-            {{ product.description }}
-          </p>
-
-          <button
-            class="px-6 py-3 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium transition"
-          >
-            Request this print
-          </button>
-        </div>
+      <!-- Loading -->
+      <div v-if="pending" class="flex justify-center py-24">
+        <div class="w-10 h-10 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
       </div>
 
-      <div
-        v-else
-        class="bg-[#0b1120] border border-red-500/40 text-red-300 rounded-xl p-6 mt-6"
-      >
+      <!-- Error / not found -->
+      <div v-else-if="error || !product" class="bg-[#0b1120] border border-red-500/40 text-red-300 rounded-xl p-6 mt-6">
         <h2 class="text-lg font-semibold mb-2">Product not found</h2>
-        <p class="text-sm text-gray-400">
-          We couldn't find a product with ID
-          <span class="font-mono text-gray-200">{{ route.params.id }}</span
-          >.
-        </p>
+        <p class="text-sm text-gray-400">We couldn't find a product with this ID.</p>
       </div>
+
+      <template v-else>
+        <!-- Product card -->
+        <div class="bg-[#0b1120] border border-white/10 rounded-2xl overflow-hidden shadow-2xl shadow-black/40 md:flex">
+          <img
+            :src="product.imageUrl || '/assets/images/SM3dPrints.png'"
+            :alt="product.name"
+            class="w-full md:w-1/2 h-72 md:h-auto object-cover"
+            @error="onImageError"
+          />
+
+          <div class="p-6 md:p-8 flex-1">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <p v-if="product.category" class="text-xs uppercase tracking-wide text-gray-500">{{ product.category }}</p>
+              <span
+                class="shrink-0 text-xs px-2 py-0.5 rounded-full font-medium"
+                :class="product.inStock ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'"
+              >{{ product.inStock ? 'In Stock' : 'Out of Stock' }}</span>
+            </div>
+            <h1 class="text-2xl md:text-3xl font-semibold text-gray-100 mb-4">{{ product.name }}</h1>
+            <p v-if="product.price" class="text-2xl font-bold text-red-400 mb-4">₹{{ product.price }}</p>
+            <p class="whitespace-pre-line text-gray-300 leading-relaxed mb-6">{{ product.description }}</p>
+
+            <a
+              href="#enquiry"
+              class="inline-block px-6 py-3 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium shadow-lg shadow-red-600/30 transition"
+            >
+              Request this print
+            </a>
+          </div>
+        </div>
+
+        <!-- Enquiry form -->
+        <div id="enquiry" class="mt-10 bg-[#0b1120] border border-white/10 rounded-2xl p-8 shadow-2xl shadow-black/40">
+          <h2 class="text-xl font-semibold text-gray-100 mb-1">Send an Enquiry</h2>
+          <p class="text-gray-400 text-sm mb-6">Interested in <span class="text-red-400">{{ product.name }}</span>? Fill in your details and we'll get back to you.</p>
+
+          <div v-if="formSuccess" class="px-5 py-4 bg-green-500/10 border border-green-500/30 rounded-xl text-green-400 text-sm mb-6">
+            Your enquiry has been sent! We'll be in touch soon.
+          </div>
+
+          <form v-else @submit.prevent="submitInquiry" class="space-y-5">
+            <div class="grid gap-5 sm:grid-cols-2">
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1.5">Name <span class="text-red-500">*</span></label>
+                <input
+                  v-model="form.name"
+                  type="text"
+                  placeholder="Your name"
+                  class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:border-red-500 transition"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1.5">Email <span class="text-red-500">*</span></label>
+                <input
+                  v-model="form.email"
+                  type="email"
+                  placeholder="you@example.com"
+                  class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:border-red-500 transition"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-1.5">Phone <span class="text-gray-500">(optional)</span></label>
+              <input
+                v-model="form.phone"
+                type="tel"
+                placeholder="+91 98765 43210"
+                class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:border-red-500 transition"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-1.5">Message <span class="text-red-500">*</span></label>
+              <textarea
+                v-model="form.message"
+                rows="4"
+                placeholder="Tell us your requirements, quantity, color preferences..."
+                class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:border-red-500 transition resize-none"
+              />
+            </div>
+
+            <div v-if="formError" class="px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
+              {{ formError }}
+            </div>
+
+            <button
+              type="submit"
+              :disabled="submitting"
+              class="px-8 py-3 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-semibold shadow-lg shadow-red-600/30 transition"
+            >
+              {{ submitting ? 'Sending…' : 'Send Enquiry' }}
+            </button>
+          </form>
+        </div>
+      </template>
     </div>
   </section>
 </template>

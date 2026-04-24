@@ -3,5 +3,10 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   modules: ['@nuxtjs/tailwindcss'],
-  components: true
+  components: true,
+  runtimeConfig: {
+    public: {
+      apiBase: 'http://localhost:5000'
+    }
+  }
 })
