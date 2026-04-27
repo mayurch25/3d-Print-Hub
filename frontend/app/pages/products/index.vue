@@ -47,7 +47,7 @@ const onImageError = (e: any) => {
           class="bg-[#0b1120] border border-white/10 rounded-2xl overflow-hidden shadow-xl shadow-black/40 flex flex-col transform transition duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-red-500/30 hover:scale-[1.02]"
         >
           <img
-            :src="product.imageUrl || '/assets/images/SM3dPrints.png'"
+            :src="product.images?.[0] || '/assets/images/SM3dPrints.png'"
             :alt="product.name"
             class="h-48 w-full object-cover"
             @error="onImageError"
