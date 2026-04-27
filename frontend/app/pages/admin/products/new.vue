@@ -10,6 +10,7 @@ const form = reactive({
   name: '',
   description: '',
   price: '',
+  originalPrice: '',
   category: '',
   inStock: true,
   published: false,
@@ -62,7 +63,7 @@ const submit = async () => {
     await $fetch(`${API}/api/products`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token.value}` },
-      body: { ...form, images, price: form.price ? Number(form.price) : undefined }
+      body: { ...form, images, price: form.price ? Number(form.price) : undefined, originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined }
     })
     router.push('/admin/products')
   } catch (err: any) {
@@ -144,7 +145,17 @@ const submit = async () => {
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-300 mb-1.5">Price (₹)</label>
+            <label class="block text-sm font-medium text-gray-300 mb-1.5">Original Price (₹) <span class="text-gray-500 font-normal">MRP</span></label>
+            <input
+              v-model="form.originalPrice"
+              type="number"
+              min="0"
+              placeholder="0"
+              class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:border-red-500 transition"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1.5">Selling Price (₹)</label>
             <input
               v-model="form.price"
               type="number"
@@ -153,15 +164,16 @@ const submit = async () => {
               class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:border-red-500 transition"
             />
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-1.5">Category</label>
-            <input
-              v-model="form.category"
-              type="text"
-              placeholder="e.g. Home Decor"
-              class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:border-red-500 transition"
-            />
-          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-1.5">Category</label>
+          <input
+            v-model="form.category"
+            type="text"
+            placeholder="e.g. Home Decor"
+            class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:border-red-500 transition"
+          />
         </div>
 
         <div class="flex items-center gap-3">

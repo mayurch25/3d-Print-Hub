@@ -16,6 +16,7 @@ const form = reactive({
   name: '',
   description: '',
   price: '',
+  originalPrice: '',
   category: '',
   inStock: true,
   published: false,
@@ -35,6 +36,7 @@ onMounted(async () => {
     form.name = product.name ?? ''
     form.description = product.description ?? ''
     form.price = product.price != null ? String(product.price) : ''
+    form.originalPrice = product.originalPrice != null ? String(product.originalPrice) : ''
     form.category = product.category ?? ''
     form.inStock = product.inStock ?? true
     form.published = product.published ?? false
@@ -91,7 +93,7 @@ const submit = async () => {
     await $fetch(`${API}/api/products/${id}`, {
       method: 'PUT',
       headers: { Authorization: `Bearer ${token.value}` },
-      body: { ...form, images, price: form.price ? Number(form.price) : undefined }
+      body: { ...form, images, price: form.price ? Number(form.price) : undefined, originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined }
     })
     existingImages.value = images
     newFiles.value = []
@@ -194,7 +196,16 @@ const submit = async () => {
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-300 mb-1.5">Price (₹)</label>
+            <label class="block text-sm font-medium text-gray-300 mb-1.5">Original Price (₹) <span class="text-gray-500 font-normal">MRP</span></label>
+            <input
+              v-model="form.originalPrice"
+              type="number"
+              min="0"
+              class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-gray-100 focus:outline-none focus:border-red-500 transition"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1.5">Selling Price (₹)</label>
             <input
               v-model="form.price"
               type="number"
@@ -202,14 +213,15 @@ const submit = async () => {
               class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-gray-100 focus:outline-none focus:border-red-500 transition"
             />
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-1.5">Category</label>
-            <input
-              v-model="form.category"
-              type="text"
-              class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-gray-100 focus:outline-none focus:border-red-500 transition"
-            />
-          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-1.5">Category</label>
+          <input
+            v-model="form.category"
+            type="text"
+            class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-gray-100 focus:outline-none focus:border-red-500 transition"
+          />
         </div>
 
         <div class="flex items-center gap-3">

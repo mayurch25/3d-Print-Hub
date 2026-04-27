@@ -121,7 +121,17 @@ const submitInquiry = async () => {
               >{{ product.inStock ? 'In Stock' : 'Out of Stock' }}</span>
             </div>
             <h1 class="text-2xl md:text-3xl font-semibold text-gray-100 mb-4">{{ product.name }}</h1>
-            <p v-if="product.price" class="text-2xl font-bold text-red-400 mb-4">₹{{ product.price }}</p>
+            <div v-if="product.price" class="flex items-center gap-3 mb-4">
+              <p class="text-2xl font-bold text-red-400">₹{{ product.price }}</p>
+              <span
+                v-if="product.originalPrice && product.originalPrice > product.price"
+                class="text-lg text-gray-500 line-through"
+              >₹{{ product.originalPrice }}</span>
+              <span
+                v-if="product.originalPrice && product.originalPrice > product.price"
+                class="text-sm font-semibold text-green-400 bg-green-500/10 px-2 py-0.5 rounded-lg"
+              >{{ Math.round((1 - product.price / product.originalPrice) * 100) }}% off</span>
+            </div>
             <p class="whitespace-pre-line text-gray-300 leading-relaxed mb-6">{{ product.description }}</p>
 
             <a

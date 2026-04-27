@@ -56,10 +56,19 @@ const onImageError = (e: any) => {
           <div class="p-5 flex flex-col flex-1">
             <div class="flex items-start justify-between gap-2 mb-2">
               <h2 class="text-xl font-semibold text-gray-100">{{ product.name }}</h2>
-              <span
-                v-if="product.price"
-                class="shrink-0 text-sm font-semibold text-red-400"
-              >₹{{ product.price }}</span>
+              <div v-if="product.price" class="shrink-0 flex flex-col items-end gap-0.5">
+                <div class="flex items-center gap-1.5">
+                  <span
+                    v-if="product.originalPrice && product.originalPrice > product.price"
+                    class="text-xs text-gray-500 line-through"
+                  >₹{{ product.originalPrice }}</span>
+                  <span class="text-sm font-semibold text-red-400">₹{{ product.price }}</span>
+                </div>
+                <span
+                  v-if="product.originalPrice && product.originalPrice > product.price"
+                  class="text-xs font-medium text-green-400 bg-green-500/10 px-1.5 py-0.5 rounded-md"
+                >{{ Math.round((1 - product.price / product.originalPrice) * 100) }}% off</span>
+              </div>
             </div>
             <p class="text-gray-400 text-sm leading-relaxed mb-4 line-clamp-3">{{ product.description }}</p>
 
