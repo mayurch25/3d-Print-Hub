@@ -77,7 +77,7 @@ const showToast = (msg: string) => {
         class="bg-[#0b1120] border border-white/10 rounded-2xl overflow-hidden shadow-xl hover:shadow-red-500/10 hover:border-red-500/30 transition duration-300"
       >
         <img
-          :src="product.imageUrl || '/assets/images/SM3dPrints.png'"
+          :src="product.images?.[0] || '/assets/images/SM3dPrints.png'"
           :alt="product.name"
           class="w-full h-40 object-cover"
           @error="(e: any) => { if (!e.target.dataset.fb) { e.target.src='/assets/images/SM3dPrints.png'; e.target.dataset.fb='1' } }"
