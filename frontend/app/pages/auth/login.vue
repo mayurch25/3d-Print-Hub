@@ -4,11 +4,11 @@ definePageMeta({ layout: false })
 const config = useRuntimeConfig()
 const API = config.public.apiBase
 const { setAuth, isLoggedIn, isAdmin, init } = useAuth()
+const { success, error: toastError } = useToast()
 const router = useRouter()
 const route = useRoute()
 
 const form = reactive({ email: '', password: '' })
-const error = ref('')
 const loading = ref(false)
 const showPassword = ref(false)
 const rememberMe = ref(false)
@@ -26,9 +26,8 @@ onMounted(() => {
 })
 
 const submit = async () => {
-  error.value = ''
   if (!form.email || !form.password) {
-    error.value = 'Please fill in all fields.'
+    toastError('Please fill in all fields.')
     return
   }
   loading.value = true
@@ -43,10 +42,11 @@ const submit = async () => {
       localStorage.removeItem('rememberedEmail')
     }
     setAuth(res.token, res.user)
+    success('Logged in successfully!')
     const redirect = route.query.redirect as string;
     router.push(redirect || (res.user.role === 'admin' ? '/admin' : '/'))
   } catch (err: any) {
-    error.value = err?.data?.message || err?.message || 'Login failed. Please try again.'
+    toastError(err?.data?.message || err?.message || 'Login failed. Please try again.')
   } finally {
     loading.value = false
   }
@@ -116,10 +116,6 @@ const submit = async () => {
               class="w-4 h-4 rounded border-gray-600 bg-gray-900 text-red-600 focus:ring-red-500 focus:ring-offset-0 cursor-pointer"
             />
             <label for="rememberMe" class="text-sm text-gray-400 cursor-pointer select-none">Remember me</label>
-          </div>
-
-          <div v-if="error" class="px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
-            {{ error }}
           </div>
 
           <button
