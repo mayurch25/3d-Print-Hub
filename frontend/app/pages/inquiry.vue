@@ -176,7 +176,7 @@ const submit = async () => {
           </div>
           <div>
             <p class="text-gray-500 text-xs">Email us</p>
-            <p class="text-gray-300 text-sm font-medium">info@sm3dprinthub.com</p>
+            <p class="text-gray-300 text-sm font-medium">sm3dprinthub@gmail.com</p>
           </div>
         </div>
         <div class="bg-[#0b1120] border border-white/5 rounded-xl px-5 py-4 flex items-center gap-4">

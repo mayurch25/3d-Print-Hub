@@ -58,10 +58,10 @@
           <p class="text-gray-400">
             Email:
             <a
-              href="mailto:info@sm3dprinthub.com"
+              href="mailto:sm3dprinthub@gmail.com"
               class="hover:text-red-500 transition duration-300"
             >
-              info@sm3dprinthub.com
+              sm3dprinthub@gmail.com
             </a>
           </p>
 
